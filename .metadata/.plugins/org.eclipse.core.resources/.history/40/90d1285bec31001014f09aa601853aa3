@@ -1,0 +1,91 @@
+package com.coderhouse.dao;
+
+import com.coderhouse.models.Categoria;
+import com.coderhouse.models.Paciente;
+import com.coderhouse.models.Practica;
+import com.coderhouse.models.Turno;
+import com.coderhouse.repositories.CategoriaRepository;
+import com.coderhouse.repositories.PacienteRepository;
+import com.coderhouse.repositories.PracticaRepository;
+import com.coderhouse.repositories.TurnoRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
+
+@Component
+public class DaoFactory {
+
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
+    @Autowired
+    private PacienteRepository pacienteRepository;
+
+    @Autowired
+    private PracticaRepository practicaRepository;
+
+    @Autowired
+    private TurnoRepository turnoRepository;
+
+    // Persistir una categoría
+    public Categoria persistirCategoria(Categoria categoria) {
+        return categoriaRepository.save(categoria);
+    }
+
+    // Persistir una práctica
+    public Practica persistirPractica(Practica practica) {
+        return practicaRepository.save(practica);
+    }
+
+    // Persistir un paciente
+    public Paciente persistirPaciente(Paciente paciente) {
+        return pacienteRepository.save(paciente);
+    }
+
+    // Persistir un turno
+    public Turno persistirTurno(Turno turno) {
+        return turnoRepository.save(turno);
+    }
+
+    // Asignar múltiples prácticas a un paciente
+    public void asignarPacienteAPractica(Long pacienteId, List<Long> practicasIds) {
+        Optional<Paciente> pacienteOpt = pacienteRepository.findById(pacienteId);
+        if (pacienteOpt.isPresent()) {
+            Paciente paciente = pacienteOpt.get();
+            List<Practica> practicas = practicaRepository.findAllById(practicasIds);
+            paciente.getPracticas().addAll(practicas);
+            pacienteRepository.save(paciente);
+        } else {
+            throw new RuntimeException("Paciente no encontrado con ID: " + pacienteId);
+        }
+    }
+
+    // Obtener todas las categorías
+    public List<Categoria> obtenerCategorias() {
+        return categoriaRepository.findAll();
+    }
+
+    // Obtener todas las prácticas
+    public List<Practica> obtenerPracticas() {
+        return practicaRepository.findAll();
+    }
+
+    // Obtener todos los pacientes
+    public List<Paciente> obtenerPacientes() {
+        return pacienteRepository.findAll();
+    }
+
+    // Obtener todos los turnos
+    public List<Turno> obtenerTurnos() {
+        return turnoRepository.findAll();
+    }
+
+    public void flushPracticas() {
+        practicaRepository.flush();
+    }
+
+		
+	}

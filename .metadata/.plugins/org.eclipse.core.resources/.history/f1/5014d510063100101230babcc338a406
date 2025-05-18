@@ -1,0 +1,64 @@
+package com.coderhouse.models;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+@Entity
+@Schema(description = "Modelo de práctica")
+@Table(name = "Practicas")
+public class Practica {
+
+    @Schema(description = "ID de la práctica", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Schema(description = "Nombre de la práctica", requiredMode = Schema.RequiredMode.REQUIRED, example = "Audiometría")
+    @Column(name = "Nombre", nullable = false)
+    private String nombre;
+
+    @Schema(description = "Descripción de la práctica")
+    @Column(name = "Descripcion", nullable = false)
+    private String descripcion;
+
+    @Schema(description = "Precio de la práctica", example = "4500")
+    @Column(name = "Precio", nullable = false)
+    private Double precio;
+
+    @Schema(description = "Categoría de la práctica", example = "Laboratorio")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Categoria categoria;
+
+    @Schema(description = "Lista de pacientes asignados a la práctica")
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "paciente_practica",
+        joinColumns = @JoinColumn(name = "practica_id"),
+        inverseJoinColumns = @JoinColumn(name = "paciente_id")
+    )
+    @JsonIgnore
+    private List<Paciente> pacientes = new ArrayList<>();
+
+    public Practica(String nombre, String descripcion, Double precio, List<Paciente> pacientes, Categoria categoria) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.precio = precio;
+        this.pacientes = pacientes != null ? pacientes : new ArrayList<>();
+        this.categoria = categoria;
+    }
+}

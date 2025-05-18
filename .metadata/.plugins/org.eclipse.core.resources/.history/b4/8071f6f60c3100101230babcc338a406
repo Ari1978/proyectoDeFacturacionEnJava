@@ -1,0 +1,5 @@
+package com.coderhouse.config;
+
+public class RestTemplateConfig {
+
+}

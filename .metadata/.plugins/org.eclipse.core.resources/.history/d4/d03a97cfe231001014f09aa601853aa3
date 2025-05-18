@@ -1,0 +1,82 @@
+package com.coderhouse.models;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "pacientes")
+@Getter
+@Setter
+@NoArgsConstructor
+@Schema(description = "Modelo de paciente")
+public class Paciente {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "ID del paciente", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    private Long id;
+
+    @Column(name = "nombre", nullable = false)
+    @Schema(description = "Nombre del paciente", requiredMode = Schema.RequiredMode.REQUIRED, example = "Matias")
+    private String nombre;
+
+    @Column(name = "apellido", nullable = false)
+    @Schema(description = "Apellido del paciente", requiredMode = Schema.RequiredMode.REQUIRED, example = "Martinez")
+    private String apellido;
+
+    @Column(name = "dni", nullable = false, unique = true)
+    @Schema(description = "Número de documento del paciente", example = "33444555")
+    private int dni;
+
+    @Column(name = "edad")
+    @Schema(description = "Edad del paciente", example = "28")
+    private int edad;
+
+    @Column(name = "sexo")
+    @Schema(description = "Sexo del paciente", requiredMode = Schema.RequiredMode.REQUIRED, example = "Femenino o Masculino")
+    private String sexo;
+
+    @Column(name = "telefono", nullable = false, unique = true)
+    @Schema(description = "Número de teléfono del paciente", example = "8887485")
+    private int telefono;
+
+    @Column(name = "cobertura")
+    @Schema(description = "Cobertura médica del paciente", requiredMode = Schema.RequiredMode.REQUIRED, example = "Osde")
+    private String cobertura;
+
+    // Relación con Turno
+    @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @Schema(description = "Lista de turnos asignados al paciente")
+    private List<Turno> turnos = new ArrayList<>();
+
+    // Relación con Practica
+    @ManyToMany(mappedBy = "pacientes", fetch = FetchType.EAGER)
+    @JsonIgnore
+    @Schema(description = "Lista de prácticas asignadas al paciente")
+    private List<Practica> practicas = new ArrayList<>();
+
+    @CreatedDate
+    @Column(updatable = false)
+    @Schema(description = "Muestra la hora y fecha del registro del paciente")
+    private LocalDateTime createdAt;
+
+    public Paciente(String nombre, String apellido, int dni, int edad, String sexo, int telefono, String cobertura) {
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.dni = dni;
+        this.edad = edad;
+        this.sexo = sexo;
+        this.telefono = telefono;
+        this.cobertura = cobertura;
+    }
+}

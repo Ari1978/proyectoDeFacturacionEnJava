@@ -1,0 +1,10 @@
+package com.coderhouse.config;
+import org.springframework.web.client.RestTemplate;
+
+public class RestTemplateConfig {
+	
+	
+	public RestTemplate rt() {
+		return new RestTemplate();
+	}
+}
