@@ -15,8 +15,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-
-
 @RestController
 @RequestMapping("/api/fecha")
 public class FechaController {
@@ -28,23 +26,22 @@ public class FechaController {
 			
 	private String ultimaFechaMostrada = "N/A";
 	
-	
 	@Operation(summary = "Obtener la fecha y hora actual del sistema")
 	@ApiResponses(value = {
 	    @ApiResponse(responseCode = "200", description = "Fecha y hora obtenidas correctamente", content = {
-	        @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
+	        @Content(mediaType = "application/json", 
+	                 schema = @Schema(type = "string", example = "Fecha actual: MONDAY APRIL 28 2025\nHora: 15:45:30\nNúmero de Invocaciones: 3\nÚltima fecha Mostrada: SUNDAY MARCH 27, 2025 14:30:00"))
 	    }),
 	    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
 	})
 	
 	@GetMapping
-	public ResponseEntity<String> obtenerfechaActual(){
+	public ResponseEntity<String> obtenerfechaActual() {
 		contadorDeInvocaciones++;
 		TimeResponseDTO fechaActual = fs.obtenerFechaYHoraActuales();
 		
 		String message = String.format(
-				"Fecha actual: %s %s %d\nHora: %s\nNúmero de Invocaciones: %dUltima fecha Mostrada: %s",
-				
+				"Fecha actual: %s %s %d %d\nHora: %s\nNúmero de Invocaciones: %d\nÚltima fecha Mostrada: %s",
 				fechaActual.getDayOfWeek(),
 				fechaActual.getMonth(),
 				fechaActual.getDay(),
@@ -60,25 +57,7 @@ public class FechaController {
 				fechaActual.getDay(),
 				fechaActual.getYear(),
 				fechaActual.getTime()
-				);
+		);
 		return ResponseEntity.ok(message);
 	}
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

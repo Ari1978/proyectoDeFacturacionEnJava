@@ -89,7 +89,7 @@ public class PracticaService implements CrudInterface<Practica, Long> {
 	    Categoria categoria = categoriaRepository.findById(categoriaId)
 	            .orElseThrow(() -> new IllegalArgumentException("Categoría inexistente"));
 
-	    // Buscar la práctica por su ID (se usa practicaId, no categoriaId)
+	    // Buscar la práctica por su ID
 	    Practica practica = practicaRepository.findById(practicaId)
 	            .orElseThrow(() -> new IllegalArgumentException("Práctica inexistente"));
 
@@ -100,10 +100,10 @@ public class PracticaService implements CrudInterface<Practica, Long> {
 	    }
 	    
 	    
-	    // Asignar la categoría a la práctica
+	   
 	    practica.setCategoria(categoria);
 
-	    // Guardar la práctica actualizada en la base de datos
+	   
 	    return practicaRepository.save(practica);
 	}
 

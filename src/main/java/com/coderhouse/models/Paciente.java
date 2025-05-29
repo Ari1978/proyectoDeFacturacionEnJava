@@ -8,11 +8,15 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@Data
+
 @Entity
-@EntityListeners(AuditingEntityListener.class) // Necesario para @CreatedDate
+@Data
+@AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class) 
 @Schema(description = "Modelo de paciente")
 @Table(name = "pacientes")
 public class Paciente {
@@ -70,7 +74,7 @@ public class Paciente {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    // Constructor personalizado
+    
     public Paciente(String nombre, String apellido, int dni, int edad, String sexo, String telefono, String cobertura) {
         this.nombre = nombre;
         this.apellido = apellido;
@@ -82,7 +86,6 @@ public class Paciente {
     }
 
     public Paciente() {
-        // Constructor vacío requerido por JPA
     }
 
     public List<Long> getPracticaIds() {
@@ -96,4 +99,8 @@ public class Paciente {
     public List<Practica> getPracticas() {
         return this.practicas;
     }
+
+	
+
+
 }

@@ -32,12 +32,16 @@ public class CategoriaService implements CrudInterface<Categoria, Long> {
 	@Override
 	@Transactional
 	public Categoria save(Categoria nuevaCategoria) {
-		if (categoriaRepository.existsByNombre(nuevaCategoria.getNombre())) {
-			throw new IllegalArgumentException("Ya existe una categoria con ese nombre");
-		}
-		return categoriaRepository.save(nuevaCategoria);
+	    if (nuevaCategoria.getNombre() == null || nuevaCategoria.getNombre().isBlank()) {
+	        throw new IllegalArgumentException("El nombre de la categoría no puede ser vacío o nulo");
+	    }
 
+	    if (categoriaRepository.existsByNombre(nuevaCategoria.getNombre())) {
+	        throw new IllegalArgumentException("Ya existe una categoria con ese nombre");
+	    }
+	    return categoriaRepository.save(nuevaCategoria);
 	}
+
 
 	@Override
 	@Transactional

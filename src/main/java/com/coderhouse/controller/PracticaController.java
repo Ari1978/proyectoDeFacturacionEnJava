@@ -24,9 +24,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/a/practicas")
+@Tag(name = "Gestión de prácticas", description = "Endpoints para gestionar prácticas médicas")
 public class PracticaController {
 
     @Autowired

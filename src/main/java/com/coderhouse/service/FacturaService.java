@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.coderhouse.models.Factura;
+import com.coderhouse.models.Practica;
 import com.coderhouse.repositories.FacturaRepository;
 import com.coderhouse.interfaces.CrudInterface;
 import java.util.List;
@@ -29,7 +30,11 @@ public class FacturaService implements CrudInterface<Factura, Long> {
     @Override
     @Transactional
     public Factura save(Factura nuevaFactura) {
-        // Calculamos el total de la factura antes de guardarla
+        if (nuevaFactura.getPracticas() != null) {
+            for (Practica practica : nuevaFactura.getPracticas()) {
+                practica.setFactura(nuevaFactura);
+            }
+        }
         nuevaFactura.calcularTotal();
         return facturaRepository.save(nuevaFactura);
     }
@@ -37,11 +42,11 @@ public class FacturaService implements CrudInterface<Factura, Long> {
     @Override
     @Transactional
     public Factura update(Long id, Factura facturaActualizada) {
-        // Buscamos la factura existente
+        
         Factura facturaExistente = facturaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Factura no encontrada"));
 
-        // Actualizamos los campos solo si no son nulos
+        
         if (facturaActualizada.getPaciente() != null) {
             facturaExistente.setPaciente(facturaActualizada.getPaciente());
         }
@@ -49,7 +54,7 @@ public class FacturaService implements CrudInterface<Factura, Long> {
             facturaExistente.setFecha(facturaActualizada.getFecha());
         }
 
-        // Si hay una actualización de las prácticas o el total se debe recalcular
+        
         if (facturaActualizada.getPracticas() != null) {
             facturaExistente.setPracticas(facturaActualizada.getPracticas());
             facturaExistente.calcularTotal(); // Recalculamos el total después de actualizar las prácticas

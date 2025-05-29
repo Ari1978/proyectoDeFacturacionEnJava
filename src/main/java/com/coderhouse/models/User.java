@@ -2,12 +2,16 @@ package com.coderhouse.models;
 
 import jakarta.persistence.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")  
 @Schema(description = "Modelo de usuarios")
 public class User {
@@ -30,7 +34,7 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    // Constructor con parámetros
+    
     public User(String nombre, String apellido, String email, LocalDateTime createdAt) {
         this.nombre = nombre;
         this.apellido = apellido;

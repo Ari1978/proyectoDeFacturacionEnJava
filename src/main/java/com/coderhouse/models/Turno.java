@@ -12,29 +12,34 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @AllArgsConstructor
-@NoArgsConstructor // Lombok: Genera un constructor sin parámetros
-@Data // Lombok: Genera los getters, setters, toString, hashCode y equals
+@NoArgsConstructor
+@Data
 @Entity
 @Table(name = "turnos")
+@Schema(description = "Entidad que representa un turno médico")
 public class Turno {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "ID único del turno", example = "1")
     private Long id;
 
+    @Schema(description = "Fecha del turno", example = "2025-06-01")
     private LocalDate fecha;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Quitar CascadeType.ALL aquí
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "paciente_id", nullable = false)
+    @Schema(description = "Paciente que tiene asignado el turno")
     private Paciente paciente;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Quitar CascadeType.ALL aquí
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "practica_id", nullable = false)
+    @Schema(description = "Práctica médica asignada al turno")
     private Practica practica;
 
-    // Constructor con parámetros para mayor facilidad de uso
     public Turno(Paciente paciente, Practica practica, LocalDate fecha) {
         this.paciente = paciente;
         this.practica = practica;

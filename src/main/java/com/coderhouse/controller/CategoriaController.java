@@ -12,12 +12,12 @@ import com.coderhouse.service.CategoriaService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-
+@Tag(name = "Categorías", description = "Operaciones relacionadas con categorías de prácticas")
 @RestController
 @RequestMapping("/api/categorias")
 public class CategoriaController {
@@ -32,13 +32,13 @@ public class CategoriaController {
         }),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
     })
-    @GetMapping(path = {"/", ""})
+    @GetMapping({"", "/"})
     public ResponseEntity<List<Categoria>> getAllCategorias() {
         try {
-            List<Categoria> categorias = categoriaService.findAll(); 
-            return ResponseEntity.ok(categorias); // 200
+            List<Categoria> categorias = categoriaService.findAll();
+            return ResponseEntity.ok(categorias);
         } catch (Exception err) {
-            return ResponseEntity.internalServerError().build(); // 500
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -47,21 +47,22 @@ public class CategoriaController {
         @ApiResponse(responseCode = "200", description = "Categoría obtenida correctamente", content = {
             @Content(mediaType = "application/json", schema = @Schema(implementation = Categoria.class))
         }),
+        @ApiResponse(responseCode = "400", description = "ID de categoría inválido", content = @Content),
         @ApiResponse(responseCode = "404", description = "Categoría no encontrada", content = @Content),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
     })
     @GetMapping("/{categoriaId}")
-    public ResponseEntity<?> getCategoriaById(@PathVariable Long categoriaId){
+    public ResponseEntity<?> getCategoriaById(@PathVariable Long categoriaId) {
         if (categoriaId <= 0) {
-            return ResponseEntity.badRequest().body("El ID de la categoría no es válido"); // Validación de ID
+            return ResponseEntity.badRequest().body("El ID de la categoría no es válido");
         }
         try {
             Categoria categoria = categoriaService.findById(categoriaId);
-            return ResponseEntity.ok(categoria); // 200
+            return ResponseEntity.ok(categoria);
         } catch (IllegalArgumentException err) {
-            return ResponseEntity.notFound().build(); // 404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err.getMessage());
         } catch (Exception err) {
-            return ResponseEntity.internalServerError().build(); // 500
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -73,13 +74,15 @@ public class CategoriaController {
         @ApiResponse(responseCode = "400", description = "Error al intentar registrar una categoría", content = @Content),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
     })
-    @PostMapping("/create")
-    public ResponseEntity<Categoria> createCategoria(@RequestBody Categoria categoria) {
+    @PostMapping("/registrar")
+    public ResponseEntity<?> registrarCategoria(@RequestBody Categoria categoria) {
         try {
             Categoria categoriaCreada = categoriaService.save(categoria);
-            return ResponseEntity.status(HttpStatus.CREATED).body(categoriaCreada); // 201
+            return ResponseEntity.status(HttpStatus.CREATED).body(categoriaCreada);
+        } catch (IllegalArgumentException err) {
+            return ResponseEntity.badRequest().body(err.getMessage());
         } catch (Exception err) {
-            return ResponseEntity.internalServerError().build(); // 500
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -88,42 +91,47 @@ public class CategoriaController {
         @ApiResponse(responseCode = "200", description = "Categoría editada correctamente", content = {
             @Content(mediaType = "application/json", schema = @Schema(implementation = Categoria.class))
         }),
+        @ApiResponse(responseCode = "400", description = "ID de categoría inválido", content = @Content),
         @ApiResponse(responseCode = "404", description = "Categoría no encontrada", content = @Content),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
     })
     @PutMapping("/{categoriaId}")
-    public ResponseEntity<?> updateCategoriaById(@PathVariable Long categoriaId, @RequestBody Categoria categoriaActualizada) {
+    public ResponseEntity<?> updateCategoriaById(
+        @PathVariable Long categoriaId,
+        @RequestBody Categoria categoriaActualizada
+    ) {
         if (categoriaId <= 0) {
-            return ResponseEntity.badRequest().body("El ID de la categoría no es válido"); 
+            return ResponseEntity.badRequest().body("El ID de la categoría no es válido");
         }
         try {
             Categoria categoria = categoriaService.update(categoriaId, categoriaActualizada);
-            return ResponseEntity.ok(categoria); // 200
+            return ResponseEntity.ok(categoria);
         } catch (IllegalArgumentException err) {
-            return ResponseEntity.notFound().build(); // 404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err.getMessage());
         } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @Operation(summary = "Eliminar una categoría")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Categoría eliminada correctamente", content = @Content),
+        @ApiResponse(responseCode = "400", description = "ID de categoría inválido", content = @Content),
         @ApiResponse(responseCode = "404", description = "Categoría no encontrada", content = @Content),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
     })
     @DeleteMapping("/{categoriaId}")
-    public ResponseEntity<Void> deleteCategoriaById(@PathVariable Long categoriaId) {
+    public ResponseEntity<?> deleteCategoriaById(@PathVariable Long categoriaId) {
         if (categoriaId <= 0) {
-            return ResponseEntity.badRequest().build(); // Validación de ID
+            return ResponseEntity.badRequest().body("El ID de la categoría no es válido");
         }
         try {
             categoriaService.deleteById(categoriaId);
-            return ResponseEntity.noContent().build(); // 204
+            return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException err) {
-            return ResponseEntity.notFound().build(); // 404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err.getMessage());
         } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

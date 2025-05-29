@@ -1,6 +1,7 @@
 package com.coderhouse;
 
 import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,12 +19,16 @@ import com.coderhouse.models.Paciente;
 import com.coderhouse.models.Practica;
 import com.coderhouse.models.Turno;
 
+
 @EnableJpaAuditing
 @SpringBootApplication
 public class PrestacionesMedicasApplication implements CommandLineRunner {
 
     @Autowired
     private DaoFactory dao;
+	private Object userRepository;
+    
+    
 
     public static void main(String[] args) {
         SpringApplication.run(PrestacionesMedicasApplication.class, args);
@@ -37,12 +42,16 @@ public class PrestacionesMedicasApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         try {
-            // 1. Crear y persistir categorías (usa la instancia retornada por persistirCategoria)
-            Categoria categoria1 = dao.persistirCategoria(new Categoria("Laboratorio"));
-            Categoria categoria2 = dao.persistirCategoria(new Categoria("Estudios por imagenes"));
-            Categoria categoria3 = dao.persistirCategoria(new Categoria("Estudios complementarios"));
+           
+            Categoria categoria1 = new Categoria("Estudios por imagenes");
+            Categoria categoria2 = new Categoria("Estudios complementarios");
+            Categoria categoria3 = new Categoria("Laboratorio");
 
-            // 2. Crear y persistir prácticas (asocia las categorías persistidas, no los objetos originales)
+            dao.persistirCategoria(categoria1);
+            dao.persistirCategoria(categoria2);
+            dao.persistirCategoria(categoria3);
+            
+       
             Practica practica1 = new Practica("Electrocardiograma", "Registro eléctrico del corazón", 3500.0, categoria2);
             Practica practica2 = new Practica("Análisis de orina", "Análisis clínico de orina", 1800.0, categoria1);
             Practica practica3 = new Practica("Análisis de sangre", "Estudio de sangre completo", 2500.0, categoria1);
@@ -65,7 +74,7 @@ public class PrestacionesMedicasApplication implements CommandLineRunner {
             dao.persistirPractica(practica9);
             dao.persistirPractica(practica10);
 
-            // 3. Crear y persistir pacientes
+           
             Paciente paciente1 = new Paciente("Carlos", "Lopez", 34550623, 35, "Masculino", "1156989325", "Swiss Medical");
             Paciente paciente2 = new Paciente("Pedro", "Juarez", 32557628, 33, "Masculino", "1133989329", "Medife");
             Paciente paciente3 = new Paciente("Gabriela", "Mangioni", 30444623, 29, "Femenino", "1144882233", "Galeno");
@@ -90,7 +99,7 @@ public class PrestacionesMedicasApplication implements CommandLineRunner {
             dao.persistirPaciente(paciente10);
             dao.persistirPaciente(paciente11);
 
-            // 4. Crear y persistir turnos
+            
             Turno turno1 = new Turno(paciente1, practica5, LocalDate.now());
             Turno turno2 = new Turno(paciente2, practica4, LocalDate.now());
             Turno turno3 = new Turno(paciente3, practica2, LocalDate.now());
@@ -104,7 +113,7 @@ public class PrestacionesMedicasApplication implements CommandLineRunner {
             dao.persistirTurno(turno5);
 
             // 5. Crear y persistir un nuevo paciente y asociar prácticas
-            Paciente paciente = new Paciente("Carlos", "Gomez", 36570880, 32, "Masculino", "1156989325", "Swiss Medical");
+            Paciente paciente = new Paciente("Carlos", "Gomez", 36570880, 32, "Masculino", "1166990000", "Swiss Medical");
             dao.persistirPaciente(paciente);
 
             // 6. Asignar prácticas al nuevo paciente
@@ -116,11 +125,50 @@ public class PrestacionesMedicasApplication implements CommandLineRunner {
             if (paciente.getId() != null && !practicasParaPaciente.isEmpty()) {
                 dao.asignarPacienteAPractica(paciente.getId(), practicasParaPaciente);
             }
+            
+            // 7. Crear y persistir una factura para un paciente 
+            List<Long> practicasParaFactura = new ArrayList<>();
+            practicasParaFactura.add(practica1.getId());
+            practicasParaFactura.add(practica2.getId());
+            practicasParaFactura.add(practica3.getId());
+
+            if (paciente1.getId() != null && !practicasParaFactura.isEmpty()) {
+                dao.crearFactura(paciente1.getId(), practicasParaFactura);
+            }
+         
+            List<Long> practicasParaFactura1 = List.of(practica1.getId(), practica2.getId(), practica3.getId());
+            dao.crearFactura(paciente1.getId(), practicasParaFactura1);
+
+         
+            List<Long> practicasParaFactura2 = List.of(practica4.getId(), practica5.getId());
+            dao.crearFactura(paciente2.getId(), practicasParaFactura2);
+
+           
+            List<Long> practicasParaFactura3 = List.of(practica6.getId(), practica7.getId(), practica8.getId());
+            dao.crearFactura(paciente3.getId(), practicasParaFactura3);
+
+           
+            List<Long> practicasParaFactura4 = List.of(practica9.getId());
+            dao.crearFactura(paciente4.getId(), practicasParaFactura4);
+
+          
+            List<Long> practicasParaFactura5 = List.of(practica10.getId(), practica1.getId());
+            dao.crearFactura(paciente5.getId(), practicasParaFactura5);
 
         } catch (Exception err) {
             System.out.println("Error al iniciar datos: " + err.getMessage());
             err.printStackTrace();
         }
+    }
+
+	public Object getUserRepository() {
+		return userRepository;
+	}
+
+	public void setUserRepository(Object userRepository) {
+		this.userRepository = userRepository;
+	}
 
 }
-}
+
+
